@@ -2,48 +2,44 @@ package kr.toru.miscellaneous
 
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.lifecycleScope
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kr.toru.miscellaneous.core.network.model.request.NameRqDTO
+import kr.toru.miscellaneous.core.network.model.response.NameRsDTO
 import kr.toru.miscellaneous.core.network.service.ApiService
 import kr.toru.miscellaneous.ui.theme.MiscellaneousTheme
 import org.koin.android.ext.android.inject
 
 class MainActivity : ComponentActivity() {
 
-    val apiService by inject<ApiService>()
+    private val apiService by inject<ApiService>()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContent {
-            MiscellaneousTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
-            }
-        }
+    }
 
+    override fun onResume() {
+        super.onResume()
 
         lifecycleScope.launch {
-            fetchName()
+            val name = fetchName() as NameRsDTO
+            println("got it. name: ${name.name}, age: ${name.age}")
+            Toast.makeText(
+                this@MainActivity,
+                "Name: ${name.name}, Age: ${name.age}",
+                Toast.LENGTH_LONG
+            ).show()
         }
     }
 
@@ -51,15 +47,14 @@ class MainActivity : ComponentActivity() {
         try {
             val data = apiService.fetchSampleData(
                 NameRqDTO(
-                    name = "Toru"
+                    name = "Michael"
                 )
             )
             Log.d("MainActivity", "Fetched name: ${data.name}, Age: ${data.age}")
+            return@withContext data
         } catch (exception: Exception) {
             Log.e("MainActivity", "Error fetching name: ${exception.message}")
-            return@withContext
         }
-
     }
 }
 

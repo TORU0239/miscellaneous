@@ -66,13 +66,11 @@ dependencies {
 
     implementation(libs.ktor)
     implementation(libs.ktor.cio)
-
     implementation(libs.ktor.android)
-    implementation(libs.ktor.client.content.negotiation)
+    implementation(libs.ktor.content.negotiation)
+    implementation(libs.ktor.logging)
+    implementation(libs.ktor.serialization)
     implementation(libs.ktor.serialization.kotlinx.json)
-    implementation(libs.ktor.client.logging)
-    implementation(libs.slf4j.version)
-
     implementation(libs.kotlinx.serialization.json)
 
     implementation(project.dependencies.platform(libs.koin.bom))
